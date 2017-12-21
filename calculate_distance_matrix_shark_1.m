@@ -15,8 +15,9 @@ for row=1:size(matrix,1)
         yi = nodes(row,2);
         yj = nodes(col,2);
         distance = sqrt( (xi-xj)^2 + (yi - yj)^2);        
-        matrix(row,col) = lambda * min([1/(nodes(row,3) - nodes(col,3)) 1000])...
+        matrix(row,col) = lambda * min([1/(nodes(row,3) - nodes(col,3)),  1000])...
             + (1-lambda) * distance;
+        a = lambda * min([1/(nodes(row,3) - nodes(col,3)) 1000]);
     end
 end
 

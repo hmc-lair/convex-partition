@@ -9,6 +9,12 @@ nodes(5,:) = [2 2 1];
 
 dmatrix = calculate_distance_matrix_shark_1(nodes, 0.5);
 
+%Format the matrix to compute the line intersection
+expandedNodes = repmat(nodes, size(nodes,1), 1);
+expandedNodesCoord1 = expandedNodes(:,1:2);
+expandedNodesCoord2 = expandedNodes(:,1:2);
+
+
 cost = ones(5,1);
 
 write_p_median_with_distance_matrix(...
