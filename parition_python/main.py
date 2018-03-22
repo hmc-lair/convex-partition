@@ -4,11 +4,11 @@
 @author: Tianyi Ma
 """
 
-from IPython import get_ipython
+#from IPython import get_ipython
 
-def __reset__(): get_ipython().magic('reset -sf')
+#def __reset__(): get_ipython().magic('reset -sf')
 
-__reset__()
+#__reset__()
 
 import numpy as np
 import networkx as nx
@@ -65,7 +65,7 @@ def main():
     plt.figure(2)
     roundedProb = dict(prob)
     for key in roundedProb:
-        roundedProb[key] = round(roundedProb[key],2)
+        roundedProb[key] = round(roundedProb[key][0],2)
     nx.draw(G, pos)
     nx.draw_networkx_labels(G,pos, labels = roundedProb)
     plt.show()
