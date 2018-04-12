@@ -1,0 +1,29 @@
+set I; #All nodes
+set J; #Set of potential bases
+
+param d{I,J};
+param h{I}; #Demand at node i
+param p; #Number of bases
+
+#For edge{I,J}, which edges intersect with them.
+param E1{I,J}; #The first node of these intersecting edges
+param E2{I,J}; #The second node of these intersecting edges
+
+# whether edge i,j is being selected
+var y{I,J} binary; # whether node i is subject to base j
+var x{J} binary; # whether node j is a base
+
+minimize totalCost:
+  sum{i in I, j in J}(h[i]*d[i,j]*y[i,j]);
+  
+subject to SingleDeliveryCons{i in I}:
+  sum{j in J}(y[i,j]) = 1;
+
+subject to DeliverAllCons:
+  sum{j in J}(x[j]) = p;
+
+subject to SupplyDemandBindCons{i in I, j in J}:
+  y[i,j] <= x[j];
+
+subject to NonIntersectingPathConstraint{i in I, j in J}:
+  y[i,j] + sum{} y[a,b] <= 1;

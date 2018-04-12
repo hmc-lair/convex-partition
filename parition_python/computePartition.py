@@ -9,22 +9,24 @@ import p_median
 import numpy as np
 import networkx as nx
 
-def computePartition(nodes, partitionNum, weightVals):
+def computePartition(nodes, partitionNum, distVals, probVals):
     """Compute the partition based on nodal positions and number of partitions
         Input:  nodes, a list of all nodes
                 partitionNum, the number of paritions we want.
-                weightVals, a list of the weight between nodes. It is a 1d list.
+                distVals, a list of the distance between nodes. It is a 1d list.
+                probVals, a list of the probability of nodes. It is a 1d list.
     """
     demandVals = [1]*len(nodes)
     baseSet = nodes
-    m,x,y = p_median.p_median(nodes, baseSet, partitionNum, demandVals, weightVals)
+    m,x,y = p_median.p_median_modified(nodes, baseSet, partitionNum, demandVals, distVals,
+                              probVals)
     xoutDict = m.getAttr('X',x)
-    youtDict = m.getAttr('X',y) 
+    youtDict = m.getAttr('X',y)
     bases = {}
     for key in xoutDict:
        if xoutDict[key] == 1:
            bases[key] = []
-       
+
     for key in youtDict:
         if youtDict[key] == 1:
             q = key[1]
@@ -43,7 +45,7 @@ def generatePlanarGraph(nodes, nodeCoords):
             between node i and node j. It is zero if i and j are not connected.
     """
     #Nodes is a 2d array with x,y values of each node stored.
-    
+
     #Calculate distance matrix
     distMatrix = calculateDistanceMatrix(nodeCoords)
 
@@ -53,18 +55,18 @@ def generatePlanarGraph(nodes, nodeCoords):
     currDistMatrix = np.array(distMatrix)
     adjacencyMatrix = np.zeros([len(nodes),len(nodes)])
     currEdges = []
-    
-    
+
+
     while len(baseSet_Remain) > 0:
         flatDistMatrix = currDistMatrix.flatten()
-        # Find the central node using the 1-median algorithm 
+        # Find the central node using the 1-median algorithm
         center = p_median.find_central_node(
                 nodes, baseSet_Remain, demandVals, flatDistMatrix)
-        
+
         # Update the sets
         baseSet_Used.append(center)
         baseSet_Remain.remove(center)
-        
+
         #Try to connect the center with all the other nodes. Do not connect
         #if it intersects with existing edges
         for i in range(len(nodes)):
@@ -73,7 +75,7 @@ def generatePlanarGraph(nodes, nodeCoords):
             if not currEdges:
                 adjacencyMatrix[center, i] = currDistMatrix[center, i]
                 currEdges.append((center,i))
-            #Else, check whether the edge intersects with other edges    
+            #Else, check whether the edge intersects with other edges
             else:
                 A = nodeCoords[center]
                 B = nodeCoords[i]
@@ -83,7 +85,7 @@ def generatePlanarGraph(nodes, nodeCoords):
                     pair = temp[j]
                     C = nodeCoords[pair[0]]
                     D = nodeCoords[pair[1]]
-                    
+
                     #If edge (center, i) does not intersect any of current
                     #existing edge
                     if (not intersect(A,B,C,D)) and (j == len(temp) - 1):
@@ -98,11 +100,11 @@ def generatePlanarGraph(nodes, nodeCoords):
                     else:
                         adjacencyMatrix[center, i] = 0
                         break
-                         
+
     return adjacencyMatrix
 
 
-# Adopted from the C++ codes on 
+# Adopted from the C++ codes on
 # https://www.geeksforgeeks.org/check-if-two-given-line-segments-intersect/
 def orientation(A,B,C):
     """ To find orientation of ordered triplet (A, B, C).
@@ -111,7 +113,7 @@ def orientation(A,B,C):
         1 --> Clockwise
         2 --> Counterclockwise
     """
-    val = (B[1]-A[1])*(C[0]-B[0]) - (B[0]-A[0])*(C[1]-B[1]) 
+    val = (B[1]-A[1])*(C[0]-B[0]) - (B[0]-A[0])*(C[1]-B[1])
     if val == 0:
         return 0
     if val > 0:
@@ -167,31 +169,32 @@ def calculateDistanceMatrix(nodeCoords):
             dMatrix[i,j] = np.sqrt(np.square(x1 - x2) + np.square(y1 - y2))
     return dMatrix
 
-def calculateWeights(lam,prob,distMatrix, M = 10000):
-    """This function calculates the weight matrix based on the nodal probability
-    and distance between nodes.
-    Input:  lam, a constant for adjusting the ratio between the prob term and
-            distance term.
-            prob, a list of probability of each node
-            distMatrix, a 2d np array that stores the distance betwen nodes.
-            dist[i,j] is the distance between node i and j. It equals to 0 if
-            two nodes are not connected.
-            M, the penalty value used
-    """
-    weightMatrix = np.array(distMatrix)
-    for i in range(len(prob)):
-        for j in range(len(prob)):
-            #The cost of transisting to itself is 0
-            if i == j:
-                weightMatrix[i,j] = 0
-            elif distMatrix[i,j] != 0:
-                #weightMatrix[i,j] = lambda * 1/(Pi-Pj) + (1-lambda) * d_{i,j}
-                #
-                probTerm = lam * (np.minimum(1/ (np.abs(prob[i] - prob[j])), 100))
-                distTerm = 100*weightMatrix[i,j]*(1-lam) #100 is to adjust distTerm
-                                                         #to make it comparable with
-                                                         #the prob term
-                weightMatrix[i,j] = distTerm + probTerm
-            else:
-                weightMatrix[i,j] = M #Penalize the using a really large value
-    return weightMatrix
+
+#def calculateWeights(lam,prob,distMatrix, M = 10000):
+#    """This function calculates the weight matrix based on the nodal probability
+#    and distance between nodes.
+#    Input:  lam, a constant for adjusting the ratio between the prob term and
+#            distance term.
+#            prob, a list of probability of each node
+#            distMatrix, a 2d np array that stores the distance betwen nodes.
+#            dist[i,j] is the distance between node i and j. It equals to 0 if
+#            two nodes are not connected.
+#            M, the penalty value used
+#    """
+#    weightMatrix = np.array(distMatrix)
+#    for i in range(len(prob)):
+#        for j in range(len(prob)):
+#            #The cost of transisting to itself is 0
+#            if i == j:
+#                weightMatrix[i,j] = 0
+#            elif distMatrix[i,j] != 0:
+#                #weightMatrix[i,j] = lambda * 1/(Pi-Pj) + (1-lambda) * d_{i,j}
+#                #
+#                probTerm = lam * (np.minimum(1/ (np.abs(prob[i] - prob[j])), 100))
+#                distTerm = 100*weightMatrix[i,j]*(1-lam) #100 is to adjust distTerm
+#                                                         #to make it comparable with
+#                                                         #the prob term
+#                weightMatrix[i,j] = distTerm + probTerm
+#            else:
+#                weightMatrix[i,j] = M #Penalize the using a really large value
+#    return weightMatrix
