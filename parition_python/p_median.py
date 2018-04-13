@@ -4,10 +4,7 @@
 @author: Tianyi Ma
 """
 import gurobipy
-<<<<<<< HEAD
-=======
 import numpy as np
->>>>>>> more gurobi
 
 #The AMPL file of p-median 
 #param d{I,J};
@@ -29,9 +26,6 @@ import numpy as np
 #
 #subject to SupplyDemandBindCons{i in I, j in J}:
 #  y[i,j] <= x[j];
-<<<<<<< HEAD
-def p_median(nodes, baseSet, baseNum, demandVals, weightVals):
-=======
 
 def updateCentroids(model, where):
     if where == gurobipy.GRB.Callback.MIPSOL:
@@ -164,8 +158,7 @@ def p_median_modified(nodes, baseSet, baseNum, demandVals, distVals, probVals):
 
 
 def p_median_original(nodes, baseSet, baseNum, demandVals, weightVals):
->>>>>>> more gurobi
-    """Solves the p-median problem using the Gurobi solver. 
+        """Solves the p-median problem using the Gurobi solver. 
         Input:  nodes, a list of all nodes
             baseSet, a list of potential bases. It is usually the same as
             nodes in our project.
@@ -177,11 +170,7 @@ def p_median_original(nodes, baseSet, baseNum, demandVals, weightVals):
                 y, y[i,j] means that node j is subject to base node i
     """
     #Model
-<<<<<<< HEAD
-    m = gurobipy.Model('p-median')
-=======
     m = gurobipy.Model('p-median_original')
->>>>>>> more gurobi
     
     #Params
     demand = dict(zip(nodes,demandVals))
@@ -209,12 +198,8 @@ def p_median_original(nodes, baseSet, baseNum, demandVals, weightVals):
     
     return m,x,y
 
-<<<<<<< HEAD
-def find_central_node(nodes, baseSet, demandVals, weightVals):
-=======
 
 def find_central_node(nodes, baseSet, demandVals, distVals):
->>>>>>> more gurobi
     """This function solves the 1-median problem, a special case of the p-median
         problem when the baseNum is 1. Given a set of nodes, it finds the node
         that minimizes the total cost to cover all the nodes and demands if an 
@@ -227,11 +212,7 @@ def find_central_node(nodes, baseSet, demandVals, distVals):
                 weightVals, a list of the weight between nodes. It is a 1d list.
     """
     #Call the more general p-median algorithm.
-<<<<<<< HEAD
-    m,x,y = p_median(nodes, baseSet, 1, demandVals, weightVals)
-=======
     m,x,y = p_median_original(nodes, baseSet, 1, demandVals, distVals)
->>>>>>> more gurobi
     #Extract data from the model
     xoutDict = m.getAttr('X',x)
     for key in xoutDict:
