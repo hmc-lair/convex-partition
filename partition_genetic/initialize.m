@@ -1,1 +1,1 @@
-addpath(genpath('connected_components'))
+addpath(genpath('connected_components'), genpath('shortest_tour'))

@@ -1,0 +1,31 @@
+function [dist,next] = floyd_warshall(adj_list,points)
+%FLOYD_WARSHALL Find the shortest paths between all node pairs. This
+%implementation allows path reconstruction.
+%
+% Input:
+% 1. adj_list: adjacency list of the graph;
+% 2. points: a V-by-2 matrix; first column is the x coordinates, second
+% column is the y coordinates.
+%
+% Output:
+% 1. dist: a V-by-V distance matrix representing the shortest distance from
+% one vertex to another initialized to infy
+% 2. next: a V-by-V matrix of indices initialized to -1
+
+assert(size(adj_list,1) == 1, 'Adjacency list needs to be 1-by-N');
+assert(size(adj_list,2) == size(points,1), 'Size mismatch.');
+V = size(adj_list,2);
+
+dist = inf(V);
+next = -ones(V);
+
+for i=1:V
+    c_neighbors = adj_list(1,i);
+    for j=1:c_neighbors
+        p1 = poin
+        c_dist = 
+    end
+end
+
+end
+
