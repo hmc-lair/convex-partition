@@ -31,9 +31,11 @@ for i=1:num_partitions
 end
 
 partition_adj_matrices = {};
+partition_points = {};
 for i=1:num_partitions
     cindx = partition_indices{i};
     partition_adj_matrices{i} = adj_mat(cindx,cindx);
+    partition_points{i} = [x(cindx,:), y(cindx,:)];
 end
 
 % Plot the subgraphs (no more connection between partitions)
@@ -42,3 +44,11 @@ for i=1:num_partitions
     cgraph = graph(partition_adj_matrices{i});
     plot(cgraph, 'XData', dt.Points(partition_indices{i}, 1), 'YData', dt.Points(partition_indices{i}, 2));
 end
+
+% Try TSP on the first partition
+[dist1, next1] = fake_complete_graph(partition_adj_matrices{1}, ...
+                                     partition_points{1});
+
+% Method 1: tsp_ga.m 
+userConfig = struct('xy',partition_points{1}, 'dmat', dist1);
+resultStruct = tsp_ga(userConfig);

@@ -1,0 +1,17 @@
+function [dist,next] = fake_complete_graph(adj_mat,points)
+%FAKE_COMPLETE_GRAPH Turn a adjacency list with weights to a fake complete
+%graph
+%
+% Input: 
+% 1. adj_mat: adjacency matrix representation of the graph
+% 2. points: (x,y) coordinates of the node points. 1st column: x; 2nd
+% column: y
+
+% turn the adj_mat to a adj_list
+adj_list = cell(1,size(ad
+for row=1:size(adj_mat,1)
+    
+end
+
+end
+
