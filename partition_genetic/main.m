@@ -12,7 +12,7 @@ penalty = 1e10;
 
 % Case 2: random with equal probabilities
 rng default
-num_nodes = 10;
+num_nodes = 15;
 x = randn(num_nodes,1)*5;
 y = randn(num_nodes,1)*5;
 T = 1;
@@ -45,10 +45,15 @@ for i=1:num_partitions
     plot(cgraph, 'XData', dt.Points(partition_indices{i}, 1), 'YData', dt.Points(partition_indices{i}, 2));
 end
 
-% Try TSP on the first partition
-[dist1, next1] = fake_complete_graph(partition_adj_matrices{1}, ...
-                                     partition_points{1});
 
+% TSP!
 % Method 1: tsp_ga.m 
-userConfig = struct('xy',partition_points{1}, 'dmat', dist1);
-resultStruct = tsp_ga(userConfig);
+for i=1:num_partitions
+    % Try TSP on the first partition
+    [dist, next] = fake_complete_graph(partition_adj_matrices{i}, ...
+                                         partition_points{i});
+
+    userConfig = struct('xy',partition_points{i}, 'dmat', dist);
+    resultStruct = tsp_ga(userConfig)
+end
+
