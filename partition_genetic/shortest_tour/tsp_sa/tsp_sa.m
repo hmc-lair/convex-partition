@@ -1,4 +1,4 @@
-function [best_fitness,best_solution] = tsp_sa(adj_mat, dmat, points)
+function [best_fitness,best_solution] = tsp_sa(dmat, points)
 %TSP_SA Use simulated annealing to solve the traveling salesman problem
 %
 % See: https://github.com/chncyhn/simulated-annealing-tsp/blob/master/anneal.py
@@ -13,9 +13,9 @@ alpha = 0.995;
 stopping_temperature = 0.000001;
 stopping_iter = 10000;
 
-iterations = 1;
+iteration = 1;
 nodes_idx = [1:N]';
-c_solution = tsp_sa_initial_solution(adj_mat, dmat);
+c_solution = tsp_sa_initial_solution(dmat);
 best_solution = c_solution;
 
 initial_fitness = tsp_sa_fitness(c_solution, dmat);
@@ -25,11 +25,11 @@ best_fitness = c_fitness;
 fitness_list = [c_fitness];
 
 % Annealing
-while T >= stopping_temperature && iterations < stopping_iter
+while T >= stopping_temperature && iteration < stopping_iter
     candidate = c_solution;
-    l = randi([3, N-1]);
     i = randi([1, N-1]);
-    candidate(1, i:(i+l)) = fliplr( candidate(1, i:(i+l)) );
+    l = randi([i+1, N]);
+    candidate(1, i:l) = fliplr( candidate(1, i:l) );
     
     % TODO: Check acceptance
     candidate_fitness = tsp_sa_fitness( candidate, dmat );

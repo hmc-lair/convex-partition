@@ -1,8 +1,6 @@
-function [solution] = tsp_sa_initial_solution(adj_mat, dmat)
+function [solution] = tsp_sa_initial_solution(dmat)
 %TSP_SA_INITIAL_SOLUTION Produce an initial solution for simulated
 %annealing
-
-adj_mat = full(adj_mat);
 
 rng default;
 c_node = randi([1 size(dmat,1)]);

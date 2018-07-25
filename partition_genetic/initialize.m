@@ -1,1 +1,2 @@
-addpath(genpath('connected_components'), genpath('shortest_tour'))
+addpath(genpath('connected_components'), genpath('shortest_tour'),...
+    genpath('stochastic_control'))
